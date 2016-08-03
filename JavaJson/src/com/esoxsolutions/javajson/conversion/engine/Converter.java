@@ -7,6 +7,8 @@ import com.esoxsolutions.javajson.annotations.JsonSerializable;
 
 public class Converter {
 
+	public static String START_ARRAY="[";
+	public static String END_ARRAY="]";
 	public static String START_JSON="{";
 	public static String END_JSON="}";
 	public static String EMPTY_JSON="{}";
@@ -59,7 +61,7 @@ public class Converter {
 		Object field=f.get(o);
 		Class<?> fieldClass=field.getClass();
 		if (fieldClass.isArray()) {
-			result.append("[");
+			result.append(START_ARRAY);
 			ArrayList<String> arrayElements=new ArrayList<>();
 			Object[] values=(Object[]) f.get(o);
 			if (values!=null) {
@@ -68,11 +70,27 @@ public class Converter {
 				}
 			}
 			result.append(String.join(",", arrayElements));
-			result.append("]");
+			result.append(END_ARRAY);
 		} else {
-			result.append("\"");
-			result.append(f.get(o).toString());
-			result.append("\"");
+			try {
+				ArrayList<?> list=(ArrayList<?>)o;
+				if (list!=null) {
+					Object[] array=list.toArray(new Object[list.size()]);
+					ArrayList<String> arrayElements=new ArrayList<>();
+					result.append(START_ARRAY);
+					for (Object ob:array) {
+						arrayElements.add("\""+ob.toString()+"\"");
+					}
+					result.append(String.join(",", arrayElements));
+					result.append(END_ARRAY);
+				}
+			} catch(Exception ee) {
+			
+				result.append("\"");
+				result.append(f.get(o).toString());
+				result.append("\"");
+			}
+			
 		}
 		
 		return result.toString(); 
