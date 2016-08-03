@@ -30,7 +30,7 @@ public class Converter {
 		
 		if (o!=null) {
 			ArrayList<String> jsonElements=new ArrayList<>();
-			Field[] fields=o.getClass().getFields();
+			Field[] fields=o.getClass().getDeclaredFields();
 			for (Field f:fields) {
 				JsonSerializable attribute=(JsonSerializable)f.getAnnotation(JsonSerializable.class);
 				if (attribute==null) {
@@ -73,7 +73,7 @@ public class Converter {
 			result.append(END_ARRAY);
 		} else {
 			try {
-				ArrayList<?> list=(ArrayList<?>)o;
+				ArrayList<?> list=(ArrayList<?>)f.get(o);
 				if (list!=null) {
 					Object[] array=list.toArray(new Object[list.size()]);
 					ArrayList<String> arrayElements=new ArrayList<>();
