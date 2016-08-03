@@ -14,8 +14,7 @@ Converter.getInstance().Convert(object);
 
 which returns the json string
 
-Limitations
-
-At this moment generic types are not supported
+Update 03-08-2016
+Generic types are now supported as are fields of inherited classes with this annotation 
 	
 
