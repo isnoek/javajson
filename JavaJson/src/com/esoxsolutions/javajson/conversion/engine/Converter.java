@@ -2,6 +2,8 @@ package com.esoxsolutions.javajson.conversion.engine;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.esoxsolutions.javajson.annotations.JsonSerializable;
 
@@ -30,8 +32,9 @@ public class Converter {
 		
 		if (o!=null) {
 			ArrayList<String> jsonElements=new ArrayList<>();
-			Field[] fields=o.getClass().getDeclaredFields();
+			ArrayList<Field> fields=(ArrayList<Field>) getAllFields(new ArrayList<Field>(),o.getClass());
 			for (Field f:fields) {
+				f.setAccessible(true);
 				JsonSerializable attribute=(JsonSerializable)f.getAnnotation(JsonSerializable.class);
 				if (attribute==null) {
 					continue;
@@ -53,6 +56,15 @@ public class Converter {
 		return EMPTY_JSON;
 	}
 
+	private static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+	    fields.addAll(Arrays.asList(type.getDeclaredFields()));
+
+	    if (type.getSuperclass() != null) {
+	        fields = getAllFields(fields, type.getSuperclass());
+	    }
+
+	    return fields;
+	}
 	private String buildElement(String jsonFieldName, Field f,Object o) throws IllegalArgumentException, IllegalAccessException {
 		StringBuilder result=new StringBuilder();
 		result.append("\"");
