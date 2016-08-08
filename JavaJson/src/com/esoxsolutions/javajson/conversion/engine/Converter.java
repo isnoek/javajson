@@ -28,7 +28,7 @@ public class Converter {
 		
 	}
 	
-	public String[] ConvertToArray(Object o) throws Exception {
+	public ArrayList<String> ConvertToArray(Object o) throws Exception {
 
 		ArrayList<String> jsonElements=new ArrayList<>();	
 		if (o!=null) {
@@ -50,7 +50,7 @@ public class Converter {
 			
 		}
 		
-		return jsonElements.toArray(new String[jsonElements.size()]);
+		return jsonElements;
 
 	}
 	
