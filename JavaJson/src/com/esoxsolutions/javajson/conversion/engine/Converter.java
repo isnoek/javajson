@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.codehaus.jettison.json.JSONObject;
 
-
 import com.esoxsolutions.javajson.annotations.JsonSerializable;
 
 public class Converter {
@@ -202,7 +201,7 @@ public class Converter {
 			JSONObject j = (JSONObject) field;
 			return "\"" + jsonFieldName + "\":" + j.toString().trim();
 		}
-		
+
 		if (fieldClass.isArray()) {
 			result.append(START_ARRAY);
 			ArrayList<String> arrayElements = new ArrayList<>();
@@ -230,18 +229,21 @@ public class Converter {
 					}
 					result.append(String.join(",", arrayElements));
 					result.append(END_ARRAY);
+					return result.toString();
 				} else {
 					return "";
 				}
-			} catch (Exception ee) {
 
-				result.append("\"");
-				result.append(prepareString(f.get(o).toString().trim()));
-				result.append("\"");
+			} catch (Exception ee) {
+				
+
 			}
 
 		}
 
+		result.append("\"");
+		result.append(prepareString(f.get(o).toString().trim()));
+		result.append("\"");
 		return result.toString();
 	}
 }
