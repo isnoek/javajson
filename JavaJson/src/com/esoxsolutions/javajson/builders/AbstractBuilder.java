@@ -102,7 +102,7 @@ public abstract class AbstractBuilder {
 					if (obj instanceof JSONObject) {
 						arrayElements.add(obj.toString().trim());
 					} else {
-						arrayElements.add("\"" + JSONObject.quote(obj.toString().trim()) + "\"");
+						arrayElements.add(JSONObject.quote(obj.toString().trim()));
 					}
 				}
 			}
@@ -117,7 +117,7 @@ public abstract class AbstractBuilder {
 					ArrayList<String> arrayElements = new ArrayList<>();
 					result.append(START_ARRAY);
 					for (Object ob : array) {
-						arrayElements.add("\"" + JSONObject.quote(ob.toString().trim()) + "\"");
+						arrayElements.add(JSONObject.quote(ob.toString().trim()));
 					}
 					result.append(String.join(",", arrayElements));
 					result.append(END_ARRAY);
@@ -132,9 +132,9 @@ public abstract class AbstractBuilder {
 
 		}
 
-		result.append("\"");
+		//result.append("\"");
 		result.append(JSONObject.quote(f.get(o).toString().trim()));
-		result.append("\"");
+		//result.append("\"");
 		return result.toString();
 	}
 }
