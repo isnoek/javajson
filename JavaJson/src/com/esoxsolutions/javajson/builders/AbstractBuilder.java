@@ -84,7 +84,7 @@ public abstract class AbstractBuilder {
 		result.append(jsonFieldName);
 		result.append("\":");
 		Object field = f.get(o);
-		if (field.toString().equals("{}") || field.toString().equals("")) {
+		if ((field==null) || (field.toString().equals("{}") || field.toString().equals(""))) {
 			return "";
 		}
 		Class<?> fieldClass = field.getClass();

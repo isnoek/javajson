@@ -23,14 +23,14 @@ public class JSONLDBuilder extends AbstractBuilder {
 		return arrayListToJson(jsonElements);
 	}
 
-	private String createType(String typeName) {
+	private static String createType(String typeName) {
 		StringBuilder sb=new StringBuilder("\"@type\":\"");
 		sb.append(typeName);
 		sb.append("\"");
 		return sb.toString();
 	}
 
-	private String createContext(String schemaName) {
+	private static String createContext(String schemaName) {
 		StringBuilder sb=new StringBuilder("\"@context\":\"");
 		sb.append(schemaName);
 		sb.append("\"");
@@ -39,7 +39,7 @@ public class JSONLDBuilder extends AbstractBuilder {
 
 
 	
-	private String getTypeName(Object o) throws Exception {
+	private static String getTypeName(Object o) throws Exception {
 		if (o!=null) {
 			JsonSerializationType serializationType=(JsonSerializationType)o.getClass().getAnnotation(JsonSerializationType.class);
 			if (serializationType==null) {
@@ -51,7 +51,7 @@ public class JSONLDBuilder extends AbstractBuilder {
 		}
 	}
 	
-	private String getSchemaName(Object o) throws Exception {
+	private static String getSchemaName(Object o) throws Exception {
 		if (o != null) {
 			JsonSerializationType serializationType = (JsonSerializationType) o.getClass()
 					.getAnnotation(JsonSerializationType.class);
