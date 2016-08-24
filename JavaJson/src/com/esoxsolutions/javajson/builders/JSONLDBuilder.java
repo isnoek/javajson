@@ -23,6 +23,18 @@ public class JSONLDBuilder extends AbstractBuilder {
 		return arrayListToJson(jsonElements);
 	}
 
+	@Override
+	public String build(Object o, String schemaType) throws Exception {
+		
+		String typeName=getTypeName(o);
+
+		ArrayList<String> jsonElements=new ArrayList<String>();
+		jsonElements.add(createContext(schemaType));
+		jsonElements.add(createType(typeName));
+		jsonElements.addAll(ConvertToArray(o));
+		
+		return arrayListToJson(jsonElements);
+	}
 	private static String createType(String typeName) {
 		StringBuilder sb=new StringBuilder("\"@type\":\"");
 		sb.append(typeName);
@@ -63,6 +75,8 @@ public class JSONLDBuilder extends AbstractBuilder {
 			throw new Exception("Null objects have no annotations");
 		}
 	}
+
+	
 
 
 

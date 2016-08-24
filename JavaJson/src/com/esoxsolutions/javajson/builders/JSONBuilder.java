@@ -19,6 +19,11 @@ public class JSONBuilder extends AbstractBuilder {
 		return EMPTY_JSON;
 	}
 
+	@Override
+	public String build(Object o, String schemaType) throws Exception {
+		return build(o);
+	}
+
 	
 
 	

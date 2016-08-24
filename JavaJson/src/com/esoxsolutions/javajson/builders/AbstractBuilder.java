@@ -20,6 +20,7 @@ public abstract class AbstractBuilder {
 
 	
 	public abstract String build(Object o) throws Exception;
+	public abstract String build(Object o,String schemaType) throws Exception;
     
 
 
@@ -117,7 +118,11 @@ public abstract class AbstractBuilder {
 					ArrayList<String> arrayElements = new ArrayList<>();
 					result.append(START_ARRAY);
 					for (Object ob : array) {
+						if (ob instanceof JSONObject) {
+							arrayElements.add(ob.toString().trim());
+						} else {
 						arrayElements.add(JSONObject.quote(ob.toString().trim()));
+						}
 					}
 					result.append(String.join(",", arrayElements));
 					result.append(END_ARRAY);

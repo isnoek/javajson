@@ -68,11 +68,26 @@ public class Converter {
 			throw new Exception("Null objects have no json");
 		}
 	}
-	
-	public ArrayList<String> Convert(Object o,JsonType jsonType) throws Exception {
+
+	public ArrayList<String> ConvertToArray(Object o, String schema) throws Exception {
+		if (o != null) {
+			JsonType type = getJsonTypeForObject(o);
+			if (builders.containsKey(type)) {
+				return builders.get(type).ConvertToArray(o);
+			} else {
+				throw new Exception("Builder was not found");
+			}
+
+		} else {
+			throw new Exception("Null objects have no json");
+		}
+
+	}
+
+	public ArrayList<String> Convert(Object o, JsonType jsonType) throws Exception {
 
 		if (o != null) {
-			
+
 			if (builders.containsKey(jsonType)) {
 				return builders.get(jsonType).ConvertToArray(o);
 			} else {
@@ -99,6 +114,20 @@ public class Converter {
 		return EMPTY_JSON;
 	}
 
+	public String Convert(Object o,String schemaType) throws Exception {
+
+		if (o != null) {
+			JsonType type = getJsonTypeForObject(o);
+			if (builders.containsKey(type)) {
+				return builders.get(type).build(o,schemaType);
+			} else {
+				throw new Exception("Builder was not found");
+			}
+
+		}
+
+		return EMPTY_JSON;
+	}
 	private JsonType getJsonTypeForObject(Object o) throws Exception {
 		JsonType result = JsonType.JSON;
 		if (o != null) {
