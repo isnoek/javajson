@@ -63,6 +63,7 @@ public class JSONLDBuilder extends AbstractBuilder {
 		}
 	}
 	
+	
 	private static String getSchemaName(Object o) throws Exception {
 		if (o != null) {
 			JsonSerializationType serializationType = (JsonSerializationType) o.getClass()

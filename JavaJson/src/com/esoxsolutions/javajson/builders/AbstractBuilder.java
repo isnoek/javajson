@@ -164,6 +164,7 @@ public abstract class AbstractBuilder {
 		return true;
 	}
 	
+	
 	protected boolean IsCollectionSimple(Collection<?> collection) {
 		if (collection==null) {
 			return true;
