@@ -3,6 +3,7 @@ package com.esoxsolutions.javajson.builders;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.codehaus.jettison.json.JSONObject;
@@ -18,12 +19,12 @@ public abstract class AbstractBuilder {
 	public static String END_JSON = "}";
 	public static String EMPTY_JSON = "{}";
 
-	
 	public abstract String build(Object o) throws Exception;
-	public abstract String build(Object o,String schemaType) throws Exception;
-    
 
+	public abstract String build(Object o, String schemaType) throws Exception;
 
+	public abstract JSONObject buildJson(Object o) throws Exception;
+	
 	protected static String prepareString(String aValue) {
 		aValue = aValue.replace("[", "");
 		aValue = aValue.replace("]", "");
@@ -48,8 +49,6 @@ public abstract class AbstractBuilder {
 		return fields;
 	}
 
-
-	
 	public ArrayList<String> ConvertToArray(Object o) throws Exception {
 
 		ArrayList<String> jsonElements = new ArrayList<>();
@@ -78,6 +77,7 @@ public abstract class AbstractBuilder {
 		return jsonElements;
 
 	}
+
 	protected static String buildElement(String jsonFieldName, Field f, Object o)
 			throws IllegalArgumentException, IllegalAccessException {
 		StringBuilder result = new StringBuilder();
@@ -85,7 +85,7 @@ public abstract class AbstractBuilder {
 		result.append(jsonFieldName);
 		result.append("\":");
 		Object field = f.get(o);
-		if ((field==null) || (field.toString().equals("{}") || field.toString().equals(""))) {
+		if ((field == null) || (field.toString().equals("{}") || field.toString().equals(""))) {
 			return "";
 		}
 		Class<?> fieldClass = field.getClass();
@@ -107,7 +107,7 @@ public abstract class AbstractBuilder {
 					}
 				}
 			}
-			
+
 			result.append(String.join(",", arrayElements));
 			result.append(END_ARRAY);
 		} else {
@@ -121,7 +121,7 @@ public abstract class AbstractBuilder {
 						if (ob instanceof JSONObject) {
 							arrayElements.add(ob.toString().trim());
 						} else {
-						arrayElements.add(JSONObject.quote(ob.toString().trim()));
+							arrayElements.add(JSONObject.quote(ob.toString().trim()));
 						}
 					}
 					result.append(String.join(",", arrayElements));
@@ -137,9 +137,40 @@ public abstract class AbstractBuilder {
 
 		}
 
-		//result.append("\"");
+		// result.append("\"");
 		result.append(JSONObject.quote(f.get(o).toString().trim()));
-		//result.append("\"");
+		// result.append("\"");
 		return result.toString();
+	}
+
+	
+
+
+
+	protected boolean IsSimpleType(Object o) {
+		if (o == null) {
+			return false;
+		}
+		return o instanceof String || o instanceof Integer;
+	}
+	
+	protected boolean IsArraySimple(Object[] array) {
+		if (array==null) {
+			return true;
+		}
+		if (array.length>0) {
+			return IsSimpleType(array[0]);
+		} 
+		return true;
+	}
+	
+	protected boolean IsCollectionSimple(Collection<?> collection) {
+		if (collection==null) {
+			return true;
+		}
+		if (collection.size()>0) {
+			return IsSimpleType(collection.toArray()[0]);
+		}
+		return true;
 	}
 }

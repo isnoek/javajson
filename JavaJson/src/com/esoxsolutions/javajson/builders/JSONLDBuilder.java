@@ -76,6 +76,12 @@ public class JSONLDBuilder extends AbstractBuilder {
 		}
 	}
 
+	@Override
+	public JSONObject buildJson(Object o) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	
 
 
