@@ -9,7 +9,6 @@ import java.util.List;
 import org.codehaus.jettison.json.JSONObject;
 
 import com.esoxsolutions.javajson.annotations.JsonSerializable;
-import com.esoxsolutions.javajson.annotations.JsonType;
 
 public abstract class AbstractBuilder {
 
@@ -151,7 +150,7 @@ public abstract class AbstractBuilder {
 		if (o == null) {
 			return false;
 		}
-		return o instanceof String || o instanceof Integer;
+		return o instanceof String || o instanceof Integer || o instanceof Boolean || o instanceof Float || o instanceof Long;
 	}
 	
 	protected boolean IsArraySimple(Object[] array) {

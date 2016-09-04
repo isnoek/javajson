@@ -13,8 +13,8 @@ public class JSONBuilder extends AbstractBuilder {
 	@Override
 	public String build(Object o) throws Exception {
 		if (o != null) {
-			ArrayList<String> jsonElements = ConvertToArray(o);
-			return arrayListToJson(jsonElements);
+			JSONObject json=buildJson(o);
+			return json.toString();
 		}
 
 		return EMPTY_JSON;
@@ -92,6 +92,5 @@ public class JSONBuilder extends AbstractBuilder {
 		}
 		return result;
 	}
-
 	
 }

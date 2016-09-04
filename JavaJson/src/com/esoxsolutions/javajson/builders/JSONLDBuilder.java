@@ -2,9 +2,12 @@ package com.esoxsolutions.javajson.builders;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
+
 
 import org.codehaus.jettison.json.JSONObject;
 
+import com.esoxsolutions.javajson.annotations.JsonSerializable;
 import com.esoxsolutions.javajson.annotations.JsonSerializationType;
 
 public class JSONLDBuilder extends AbstractBuilder {
@@ -12,42 +15,18 @@ public class JSONLDBuilder extends AbstractBuilder {
 	@Override
 	public String build(Object o) throws Exception {
 
-		String schemaName = getSchemaName(o);
-		String typeName=getTypeName(o);
-
-		ArrayList<String> jsonElements=new ArrayList<String>();
-		jsonElements.add(createContext(schemaName));
-		jsonElements.add(createType(typeName));
-		jsonElements.addAll(ConvertToArray(o));
-		
-		return arrayListToJson(jsonElements);
+		return buildJson(o).toString();
 	}
 
 	@Override
 	public String build(Object o, String schemaType) throws Exception {
 		
-		String typeName=getTypeName(o);
-
-		ArrayList<String> jsonElements=new ArrayList<String>();
-		jsonElements.add(createContext(schemaType));
-		jsonElements.add(createType(typeName));
-		jsonElements.addAll(ConvertToArray(o));
+		JSONObject result=buildJson(o);
+		result.put("@context", schemaType);
 		
-		return arrayListToJson(jsonElements);
-	}
-	private static String createType(String typeName) {
-		StringBuilder sb=new StringBuilder("\"@type\":\"");
-		sb.append(typeName);
-		sb.append("\"");
-		return sb.toString();
+		return result.toString();
 	}
 
-	private static String createContext(String schemaName) {
-		StringBuilder sb=new StringBuilder("\"@context\":\"");
-		sb.append(schemaName);
-		sb.append("\"");
-		return sb.toString();
-	}
 
 
 	
@@ -79,8 +58,77 @@ public class JSONLDBuilder extends AbstractBuilder {
 
 	@Override
 	public JSONObject buildJson(Object o) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
+		if (o == null) {
+			throw new Exception("Cannot build json on null object");
+		}
+		JSONObject result = new JSONObject();
+		String schemaName = getSchemaName(o);
+		String typeName=getTypeName(o);
+		
+		result.put("@context",schemaName);
+		result.put("@type", typeName);
+		
+		ArrayList<Field> fields = (ArrayList<Field>) getAllFields(new ArrayList<Field>(), o.getClass());
+		for (Field f : fields) {
+			f.setAccessible(true);
+			JsonSerializable attribute = (JsonSerializable) f.getAnnotation(JsonSerializable.class);
+			if (attribute == null) {
+				continue;
+			}
+			Object obj = f.get(o);
+			if (IsSimpleType(obj)) {
+				result.put(attribute.JsonFieldName(), obj.toString());
+			} else {
+				Class<?> fieldClass = obj.getClass();
+				if (fieldClass.isArray()) {
+					Object[] array = (Object[]) obj;
+
+					boolean shouldConvert = !IsArraySimple(array);
+					if (shouldConvert) {
+						ArrayList<JSONObject> converted = new ArrayList<>();
+						for (Object element : array) {
+							converted.add(buildJson(element));
+
+						}
+						result.put(attribute.JsonFieldName(), converted);
+					} else {
+						ArrayList<String> converted = new ArrayList<>();
+						for (Object element : array) {
+							converted.add(element.toString());
+						}
+						result.put(attribute.JsonFieldName(), converted);
+					}
+
+				} else {
+					try {
+						Collection<?> elements = (Collection<?>) obj;
+						if (elements != null) {
+							System.out.println("Elements is " + elements);
+							boolean shouldConvert = !IsCollectionSimple(elements);
+
+							if (shouldConvert) {
+								ArrayList<JSONObject> converted = new ArrayList<>();
+
+								for (Object element : elements) {
+									converted.add(buildJson(element));
+								}
+								result.put(attribute.JsonFieldName(), converted);
+							} else {
+								ArrayList<String> converted=new ArrayList<>();
+								for (Object element:elements) {
+									converted.add(element.toString());
+								}
+								result.put(attribute.JsonFieldName(), converted);
+							}
+						}
+					} catch (Exception e) {
+						result.put(attribute.JsonFieldName(), buildJson(obj));
+					}
+				}
+			}
+		}
+		return result;
+
 	}
 
 	
