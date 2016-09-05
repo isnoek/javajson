@@ -65,7 +65,9 @@ public class JSONLDBuilder extends AbstractBuilder {
 		String schemaName = getSchemaName(o);
 		String typeName=getTypeName(o);
 		
+		if ((schemaName!=null) && (!schemaName.equals(""))) {
 		result.put("@context",schemaName);
+		}
 		result.put("@type", typeName);
 		
 		ArrayList<Field> fields = (ArrayList<Field>) getAllFields(new ArrayList<Field>(), o.getClass());
