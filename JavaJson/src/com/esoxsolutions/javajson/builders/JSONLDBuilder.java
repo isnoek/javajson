@@ -105,7 +105,7 @@ public class JSONLDBuilder extends AbstractBuilder {
 					try {
 						Collection<?> elements = (Collection<?>) obj;
 						if (elements != null) {
-							System.out.println("Elements is " + elements);
+							//System.out.println("Elements is " + elements);
 							boolean shouldConvert = !IsCollectionSimple(elements);
 
 							if (shouldConvert) {
