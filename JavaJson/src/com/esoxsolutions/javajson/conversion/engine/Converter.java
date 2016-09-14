@@ -136,7 +136,7 @@ public class Converter {
 				result = jsonType.JsonType();
 			}
 		} else {
-			throw new Exception("Null referenced object do not have annotations");
+			throw new Exception("Null referenced object does not have annotations");
 		}
 
 		return result;
