@@ -19,4 +19,6 @@ import java.lang.annotation.Target;
 public @interface JsonSerializable {
 
 	public String JsonFieldName() default "";
+	public String JsonType() default "";
+	public String Id() default "";
 }

@@ -1,12 +1,16 @@
 package com.esoxsolutions.javajson.builders;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 
-
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+import com.esoxsolutions.javajson.annotations.JsonContext;
+import com.esoxsolutions.javajson.annotations.JsonContexts;
 import com.esoxsolutions.javajson.annotations.JsonSerializable;
 import com.esoxsolutions.javajson.annotations.JsonSerializationType;
 
@@ -62,13 +66,15 @@ public class JSONLDBuilder extends AbstractBuilder {
 			throw new Exception("Cannot build json on null object");
 		}
 		JSONObject result = new JSONObject();
-		String schemaName = getSchemaName(o);
-		String typeName=getTypeName(o);
+		JSONObject context=getContextFromObject(o);
+		result.put("@context", context);
+		//String schemaName = getSchemaName(o);
+		//String typeName=getTypeName(o);
 		
-		if ((schemaName!=null) && (!schemaName.equals(""))) {
-		result.put("@context",schemaName);
-		}
-		result.put("@type", typeName);
+		//if ((schemaName!=null) && (!schemaName.equals(""))) {
+		//result.put("@context",schemaName);
+		//}
+		//result.put("@type", typeName);
 		
 		ArrayList<Field> fields = (ArrayList<Field>) getAllFields(new ArrayList<Field>(), o.getClass());
 		for (Field f : fields) {
@@ -132,6 +138,39 @@ public class JSONLDBuilder extends AbstractBuilder {
 		return result;
 
 	}
+
+	private JSONObject getContextFromObject(Object o) throws JSONException {
+		JSONObject result=new JSONObject();
+		HashMap<String,String> namespaces=getNamespacesFromObject(o);
+		for (String k:namespaces.keySet()) {
+			result.put(k, namespaces.get(k));
+		}
+		ArrayList<Field> fields = (ArrayList<Field>) getAllFields(new ArrayList<Field>(), o.getClass());
+		for(Field f : fields) {
+			f.setAccessible(true);
+			JsonSerializable annotation=(JsonSerializable)f.getAnnotation(JsonSerializable.class);
+			if (annotation!=null) {
+				JSONObject fieldObject=new JSONObject();
+				fieldObject.put(annotation.Id(),annotation.JsonType());
+				result.put(annotation.JsonFieldName(), fieldObject);
+			}
+			
+		}
+		return result;
+	}
+
+	private HashMap<String, String> getNamespacesFromObject(Object o) {
+		HashMap<String,String> result=new HashMap<>();
+		JsonContext[] contexts = o.getClass().getAnnotationsByType(JsonContext.class);
+		Annotation[] test=o.getClass().getDeclaredAnnotations();
+		for (JsonContext jc:contexts) {
+			result.put(jc.Name(), jc.URL());
+		}
+		
+		return result;
+	}
+
+	
 
 	
 
