@@ -151,8 +151,19 @@ public class JSONLDBuilder extends AbstractBuilder {
 			JsonSerializable annotation=(JsonSerializable)f.getAnnotation(JsonSerializable.class);
 			if (annotation!=null) {
 				JSONObject fieldObject=new JSONObject();
-				fieldObject.put(annotation.Id(),annotation.JsonType());
+				String id=annotation.Id();
+				String type=annotation.JsonType();
+				
+				if ((id!=null) && (!id.equals(""))) {
+					fieldObject.put("@id", id);
+				}
+				
+				if ((type!=null) && (!type.equals(""))) {
+					fieldObject.put("@type", type);
+				}
+				
 				result.put(annotation.JsonFieldName(), fieldObject);
+				
 			}
 			
 		}
