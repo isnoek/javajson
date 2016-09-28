@@ -21,4 +21,5 @@ public @interface JsonSerializable {
 	public String JsonFieldName() default "";
 	public String JsonType() default "";
 	public String Id() default "";
+	public String Container() default "";
 }

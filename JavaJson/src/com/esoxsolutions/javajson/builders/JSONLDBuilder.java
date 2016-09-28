@@ -24,20 +24,18 @@ public class JSONLDBuilder extends AbstractBuilder {
 
 	@Override
 	public String build(Object o, String schemaType) throws Exception {
-		
-		JSONObject result=buildJson(o);
+
+		JSONObject result = buildJson(o);
 		result.put("@context", schemaType);
-		
+
 		return result.toString();
 	}
 
-
-
-	
 	private static String getTypeName(Object o) throws Exception {
-		if (o!=null) {
-			JsonSerializationType serializationType=(JsonSerializationType)o.getClass().getAnnotation(JsonSerializationType.class);
-			if (serializationType==null) {
+		if (o != null) {
+			JsonSerializationType serializationType = (JsonSerializationType) o.getClass()
+					.getAnnotation(JsonSerializationType.class);
+			if (serializationType == null) {
 				throw new Exception("No jsonld annotation");
 			}
 			return serializationType.Type();
@@ -45,8 +43,7 @@ public class JSONLDBuilder extends AbstractBuilder {
 			throw new Exception("Null objects do not have annotations");
 		}
 	}
-	
-	
+
 	private static String getSchemaName(Object o) throws Exception {
 		if (o != null) {
 			JsonSerializationType serializationType = (JsonSerializationType) o.getClass()
@@ -66,16 +63,20 @@ public class JSONLDBuilder extends AbstractBuilder {
 			throw new Exception("Cannot build json on null object");
 		}
 		JSONObject result = new JSONObject();
-		JSONObject context=getContextFromObject(o);
-		result.put("@context", context);
-		//String schemaName = getSchemaName(o);
-		//String typeName=getTypeName(o);
-		
-		//if ((schemaName!=null) && (!schemaName.equals(""))) {
-		//result.put("@context",schemaName);
-		//}
-		//result.put("@type", typeName);
-		
+		JSONObject context = getContextFromObject(o);
+		if (context != null) {
+			result.put("@context", context);
+		} else {
+			String schemaName = getSchemaName(o);
+			String typeName = getTypeName(o);
+
+			if ((schemaName != null) && (!schemaName.equals(""))) {
+				result.put("@context", schemaName);
+			}
+			result.put("@type", typeName);
+
+		}
+
 		ArrayList<Field> fields = (ArrayList<Field>) getAllFields(new ArrayList<Field>(), o.getClass());
 		for (Field f : fields) {
 			f.setAccessible(true);
@@ -111,7 +112,7 @@ public class JSONLDBuilder extends AbstractBuilder {
 					try {
 						Collection<?> elements = (Collection<?>) obj;
 						if (elements != null) {
-							//System.out.println("Elements is " + elements);
+							// System.out.println("Elements is " + elements);
 							boolean shouldConvert = !IsCollectionSimple(elements);
 
 							if (shouldConvert) {
@@ -122,8 +123,8 @@ public class JSONLDBuilder extends AbstractBuilder {
 								}
 								result.put(attribute.JsonFieldName(), converted);
 							} else {
-								ArrayList<String> converted=new ArrayList<>();
-								for (Object element:elements) {
+								ArrayList<String> converted = new ArrayList<>();
+								for (Object element : elements) {
 									converted.add(element.toString());
 								}
 								result.put(attribute.JsonFieldName(), converted);
@@ -140,51 +141,54 @@ public class JSONLDBuilder extends AbstractBuilder {
 	}
 
 	private JSONObject getContextFromObject(Object o) throws JSONException {
-		JSONObject result=new JSONObject();
-		HashMap<String,String> namespaces=getNamespacesFromObject(o);
-		for (String k:namespaces.keySet()) {
+		JSONObject result = new JSONObject();
+		HashMap<String, String> namespaces = getNamespacesFromObject(o);
+		if (namespaces == null) {
+			return null;
+		}
+		for (String k : namespaces.keySet()) {
 			result.put(k, namespaces.get(k));
 		}
 		ArrayList<Field> fields = (ArrayList<Field>) getAllFields(new ArrayList<Field>(), o.getClass());
-		for(Field f : fields) {
+		for (Field f : fields) {
 			f.setAccessible(true);
-			JsonSerializable annotation=(JsonSerializable)f.getAnnotation(JsonSerializable.class);
-			if (annotation!=null) {
-				JSONObject fieldObject=new JSONObject();
-				String id=annotation.Id();
-				String type=annotation.JsonType();
-				
-				if ((id!=null) && (!id.equals(""))) {
+			JsonSerializable annotation = (JsonSerializable) f.getAnnotation(JsonSerializable.class);
+			if (annotation != null) {
+				JSONObject fieldObject = new JSONObject();
+				String id = annotation.Id();
+				String type = annotation.JsonType();
+				String container = annotation.Container();
+				if ((id != null) && (!id.equals(""))) {
 					fieldObject.put("@id", id);
 				}
-				
-				if ((type!=null) && (!type.equals(""))) {
+
+				if ((type != null) && (!type.equals(""))) {
 					fieldObject.put("@type", type);
 				}
-				
+
+				if ((container != null) && (!container.equals(""))) {
+					fieldObject.put("@container", container);
+				}
 				result.put(annotation.JsonFieldName(), fieldObject);
-				
+
 			}
-			
+
 		}
 		return result;
 	}
 
 	private HashMap<String, String> getNamespacesFromObject(Object o) {
-		HashMap<String,String> result=new HashMap<>();
+		HashMap<String, String> result = new HashMap<>();
 		JsonContext[] contexts = o.getClass().getAnnotationsByType(JsonContext.class);
-		Annotation[] test=o.getClass().getDeclaredAnnotations();
-		for (JsonContext jc:contexts) {
+		if (contexts.length == 0) {
+			return null;
+		}
+		Annotation[] test = o.getClass().getDeclaredAnnotations();
+		for (JsonContext jc : contexts) {
 			result.put(jc.Name(), jc.URL());
 		}
-		
+
 		return result;
 	}
-
-	
-
-	
-
-
 
 }
