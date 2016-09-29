@@ -11,6 +11,8 @@ import org.codehaus.jettison.json.JSONObject;
 import com.esoxsolutions.javajson.annotations.JsonSerializable;
 
 public abstract class AbstractBuilder {
+	
+	
 
 	public static String START_ARRAY = "[";
 	public static String END_ARRAY = "]";
