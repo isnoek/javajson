@@ -13,6 +13,7 @@ import com.esoxsolutions.javajson.annotations.JsonContext;
 import com.esoxsolutions.javajson.annotations.JsonContexts;
 import com.esoxsolutions.javajson.annotations.JsonSerializable;
 import com.esoxsolutions.javajson.annotations.JsonSerializationType;
+import com.esoxsolutions.javajson.enums.ContainerType;
 
 public class JSONLDBuilder extends AbstractBuilder {
 
@@ -157,7 +158,7 @@ public class JSONLDBuilder extends AbstractBuilder {
 				JSONObject fieldObject = new JSONObject();
 				String id = annotation.Id();
 				String type = annotation.JsonType();
-				String container = annotation.Container();
+				ContainerType container = annotation.Container();
 				if ((id != null) && (!id.equals(""))) {
 					fieldObject.put("@id", id);
 				}
@@ -166,8 +167,8 @@ public class JSONLDBuilder extends AbstractBuilder {
 					fieldObject.put("@type", type);
 				}
 
-				if ((container != null) && (!container.equals(""))) {
-					fieldObject.put("@container", container);
+				if (container!=ContainerType.NONE) {
+					fieldObject.put("@container", container.toString());
 				}
 				result.put(annotation.JsonFieldName(), fieldObject);
 

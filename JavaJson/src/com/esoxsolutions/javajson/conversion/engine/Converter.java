@@ -104,7 +104,8 @@ public class Converter {
 		if (o != null) {
 			JsonType type = getJsonTypeForObject(o);
 			if (builders.containsKey(type)) {
-				return builders.get(type).build(o);
+				String result= builders.get(type).build(o);
+				return result;
 			} else {
 				throw new Exception("Builder was not found");
 			}
