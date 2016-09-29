@@ -11,6 +11,8 @@ import org.codehaus.jettison.json.JSONObject;
 import com.esoxsolutions.javajson.annotations.JsonSerializable;
 
 public abstract class AbstractBuilder {
+	
+	
 
 	public static String START_ARRAY = "[";
 	public static String END_ARRAY = "]";
@@ -18,11 +20,18 @@ public abstract class AbstractBuilder {
 	public static String END_JSON = "}";
 	public static String EMPTY_JSON = "{}";
 
+	
 	public abstract String build(Object o) throws Exception;
 
 	public abstract String build(Object o, String schemaType) throws Exception;
+	
+	public abstract String buildWithId(Object o,String id) throws Exception;
 
 	public abstract JSONObject buildJson(Object o) throws Exception;
+	
+	public abstract JSONObject buildJson(Object o,String id) throws Exception;
+	
+	public abstract JSONObject buildJson(Object o,String id,String type) throws Exception;
 	
 	protected static String prepareString(String aValue) {
 		aValue = aValue.replace("[", "");

@@ -114,6 +114,19 @@ public class Converter {
 
 		return EMPTY_JSON;
 	}
+	
+	public String ConvertWithId(Object o,String id) throws Exception {
+		if (o!=null) {
+			JsonType type=getJsonTypeForObject(o);
+			if (builders.containsKey(type)) {
+				return builders.get(type).buildWithId(o, id);
+			} else {
+				throw new Exception("Builder was not found");
+			}
+		}
+		
+		return EMPTY_JSON;
+	}
 
 	public String Convert(Object o,String schemaType) throws Exception {
 

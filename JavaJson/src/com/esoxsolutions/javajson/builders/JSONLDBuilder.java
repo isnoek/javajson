@@ -22,6 +22,11 @@ public class JSONLDBuilder extends AbstractBuilder {
 
 		return buildJson(o).toString();
 	}
+	
+	@Override
+	public String buildWithId(Object o, String id) throws Exception {
+		return buildJson(o,id).toString();
+	}
 
 	@Override
 	public String build(Object o, String schemaType) throws Exception {
@@ -59,6 +64,90 @@ public class JSONLDBuilder extends AbstractBuilder {
 	}
 
 	@Override
+	public JSONObject buildJson(Object o, String id) throws Exception {
+		if (o == null) {
+			throw new Exception("Cannot build json on null object");
+		}
+		JSONObject result = new JSONObject();
+		JSONObject context = getContextFromObject(o);
+		if (context != null) {
+			
+			result.put("@context", context);
+		} else {
+			String schemaName = getSchemaName(o);
+			String typeName = getTypeName(o);
+
+			if ((schemaName != null) && (!schemaName.equals(""))) {
+				result.put("@context", schemaName);
+			}
+			result.put("@type", typeName);
+
+		}
+		
+		ArrayList<Field> fields = (ArrayList<Field>) getAllFields(new ArrayList<Field>(), o.getClass());
+		for (Field f : fields) {
+			f.setAccessible(true);
+			JsonSerializable attribute = (JsonSerializable) f.getAnnotation(JsonSerializable.class);
+			if (attribute == null) {
+				continue;
+			}
+			Object obj = f.get(o);
+			if (IsSimpleType(obj)) {
+				result.put(attribute.JsonFieldName(), obj.toString());
+			} else {
+				Class<?> fieldClass = obj.getClass();
+				if (fieldClass.isArray()) {
+					Object[] array = (Object[]) obj;
+
+					boolean shouldConvert = !IsArraySimple(array);
+					if (shouldConvert) {
+						ArrayList<JSONObject> converted = new ArrayList<>();
+						for (Object element : array) {
+							converted.add(buildJson(element));
+
+						}
+						result.put(attribute.JsonFieldName(), converted);
+					} else {
+						ArrayList<String> converted = new ArrayList<>();
+						for (Object element : array) {
+							converted.add(element.toString());
+						}
+						result.put(attribute.JsonFieldName(), converted);
+					}
+
+				} else {
+					try {
+						Collection<?> elements = (Collection<?>) obj;
+						if (elements != null) {
+							// System.out.println("Elements is " + elements);
+							boolean shouldConvert = !IsCollectionSimple(elements);
+
+							if (shouldConvert) {
+								ArrayList<JSONObject> converted = new ArrayList<>();
+
+								for (Object element : elements) {
+									converted.add(buildJson(element));
+								}
+								result.put(attribute.JsonFieldName(), converted);
+							} else {
+								ArrayList<String> converted = new ArrayList<>();
+								for (Object element : elements) {
+									converted.add(element.toString());
+								}
+								result.put(attribute.JsonFieldName(), converted);
+							}
+						}
+					} catch (Exception e) {
+						result.put(attribute.JsonFieldName(), buildJson(obj));
+					}
+				}
+			}
+		}
+		return result;	
+		
+	}
+	
+	@Override
 	public JSONObject buildJson(Object o) throws Exception {
 		if (o == null) {
 			throw new Exception("Cannot build json on null object");
@@ -78,6 +167,7 @@ public class JSONLDBuilder extends AbstractBuilder {
 
 		}
 
+		
 		ArrayList<Field> fields = (ArrayList<Field>) getAllFields(new ArrayList<Field>(), o.getClass());
 		for (Field f : fields) {
 			f.setAccessible(true);
@@ -148,7 +238,11 @@ public class JSONLDBuilder extends AbstractBuilder {
 			return null;
 		}
 		for (String k : namespaces.keySet()) {
-			result.put(k, namespaces.get(k));
+			String namespace=namespaces.get(k);
+			JSONObject namespaceObject=new JSONObject();
+			namespaceObject.put("@id", namespace);
+			namespaceObject.put("@type", "@id");
+			result.put(k, namespaceObject);
 		}
 		ArrayList<Field> fields = (ArrayList<Field>) getAllFields(new ArrayList<Field>(), o.getClass());
 		for (Field f : fields) {
@@ -191,5 +285,15 @@ public class JSONLDBuilder extends AbstractBuilder {
 
 		return result;
 	}
+
+
+
+	@Override
+	public JSONObject buildJson(Object o, String id, String type) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	
 
 }
