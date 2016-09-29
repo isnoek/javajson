@@ -21,8 +21,14 @@ public abstract class AbstractBuilder {
 	public abstract String build(Object o) throws Exception;
 
 	public abstract String build(Object o, String schemaType) throws Exception;
+	
+	public abstract String buildWithId(Object o,String id) throws Exception;
 
 	public abstract JSONObject buildJson(Object o) throws Exception;
+	
+	public abstract JSONObject buildJson(Object o,String id) throws Exception;
+	
+	public abstract JSONObject buildJson(Object o,String id,String type) throws Exception;
 	
 	protected static String prepareString(String aValue) {
 		aValue = aValue.replace("[", "");

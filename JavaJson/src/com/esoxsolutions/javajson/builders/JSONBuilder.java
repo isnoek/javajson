@@ -92,5 +92,20 @@ public class JSONBuilder extends AbstractBuilder {
 		}
 		return result;
 	}
+
+	@Override
+	public JSONObject buildJson(Object o, String id) throws Exception {
+		return buildJson(o);
+	}
+
+	@Override
+	public JSONObject buildJson(Object o, String id, String type) throws Exception {
+		return buildJson(o);
+	}
+
+	@Override
+	public String buildWithId(Object o, String id) throws Exception {
+		return buildJson(o).toString();
+	}
 	
 }
