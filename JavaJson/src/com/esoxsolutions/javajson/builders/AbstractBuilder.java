@@ -20,6 +20,7 @@ public abstract class AbstractBuilder {
 	public static String END_JSON = "}";
 	public static String EMPTY_JSON = "{}";
 
+	
 	public abstract String build(Object o) throws Exception;
 
 	public abstract String build(Object o, String schemaType) throws Exception;

@@ -103,6 +103,7 @@ public class JSONBuilder extends AbstractBuilder {
 		return buildJson(o);
 	}
 
+	
 	@Override
 	public String buildWithId(Object o, String id) throws Exception {
 		return buildJson(o).toString();

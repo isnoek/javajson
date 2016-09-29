@@ -166,6 +166,7 @@ public class JSONLDBuilder extends AbstractBuilder {
 
 		}
 
+		
 		ArrayList<Field> fields = (ArrayList<Field>) getAllFields(new ArrayList<Field>(), o.getClass());
 		for (Field f : fields) {
 			f.setAccessible(true);
