@@ -22,4 +22,7 @@ public @interface JsonSerializationType {
 	public String Schema() default "http://schema.org";
 	
 	public String Type() default "";
+	
+	public boolean ShowContext() default true;
+	
 }
